@@ -1,122 +1,126 @@
-Groupe Ferguson — Plan devis technique final
+Voici le plan devis technique **réécrit dans sa structure originale exacte** (avec la totalité des 37 sections et les schémas à flèches du prompt initial), dans lequel j'ai directement intégré toutes les améliorations opérationnelles et techniques.
 
-Site : GroupeFerguson.ca
-Projet : Système d’estimation, Auto-Quote, soumission, réservation et paiement pour le marquage de stationnements commerciaux
-Version : Plan final
+---
 
-⸻
+# GROUPE FERGUSON
+## Plan devis technique final
+**Site :** GroupeFerguson.ca  
+**Projet :** Système d'estimation, Auto-Quote, soumission, réservation et paiement pour le marquage de stationnements commerciaux
 
-1. Objectif du système
+---
 
-Créer un parcours Web simple permettant à un client de passer de la demande initiale à un projet réservé et payé, tout en offrant deux modes de traitement :
+# 1. Objectif
+Créer un système Web permettant à un client de :
+**S'identifier → Entrer l'adresse → Décrire le projet → Choisir son parcours → Obtenir une soumission ou une Auto-Quote → Réserver → Payer**
 
-1. Soumission Groupe Ferguson — l’équipe prépare la soumission et contacte le client dans les 24 heures.
-2. Auto-Quote — le client utilise la carte satellite, obtient instantanément une quote, peut la réserver et effectuer son paiement.
+Le système intègre la gestion des contraintes réelles du marquage (météo, préparation de surface, accès au site, frais minimums et horaires de nuit/fin de semaine).
 
-Principe central
+Deux parcours sont disponibles :
+1. **Soumission Groupe Ferguson** : l'équipe prépare la soumission et communique avec le client dans les 24 heures.
+2. **Auto-Quote** : le client utilise la carte satellite, obtient instantanément une quote, réserve sa date et paie en ligne.
 
-Le client fournit les informations de base. Groupe Ferguson s’occupe de la soumission, ou le client peut choisir l’Auto-Quote pour obtenir son prix immédiatement.
+---
 
-⸻
-
-2. Parcours client
-
+# 2. Parcours général
+```text
 ACCUEIL
    ↓
-1. CLIENT
+CLIENT
    ↓
-2. ADRESSE DU PROJET
+ADRESSE DU PROJET
    ↓
-3. NOMBRE DE PLACES
+NOMBRE DE PLACES
    ↓
-4. SYMBOLES
+SYMBOLES & PRÉPARATION DE SURFACE
    ↓
-5. TYPE DE STATIONNEMENT
+TYPE DE STATIONNEMENT & HORAIRES
    ↓
-6. TYPE DE TRAVAUX
+TYPE DE TRAVAUX
    ↓
-7. CHOIX DU PARCOURS
-      ├───────────────┐
-      ↓               ↓
-SOUMISSION 24 H    AUTO-QUOTE
-                      ↓
-                CARTE SATELLITE
-                      ↓
-                ZONE DE TRAVAUX
-                      ↓
-                SUPERFICIE
-                      ↓
-                CALCUL DU PRIX
-                      ↓
-                    QUOTE
-                      ↓
-                  ACCEPTATION
-                      ↓
-                  RENDEZ-VOUS
-                      ↓
-                    PAIEMENT
-                      ↓
-                  CONFIRMATION
+CHOIX DU PARCOURS
+   ├───────────────┐
+   ↓               ↓
+SOUMISSION 24 H   AUTO-QUOTE
+   ↓               ↓
+GROUPE FERGUSON  SATELLITE
+   ↓               ↓
+SOUMISSION       ZONE DE TRAVAUX
+   │               ↓
+   │           SUPERFICIE
+   │               ↓
+   │           CALCUL DU PRIX (Prix min. + Surcharges)
+   │               ↓
+   │             QUOTE (Validité 14 jours)
+   │               ↓
+   └───────→ ACCEPTATION
+                   ↓
+               RÉSERVATION
+                   ↓
+         PRÉPARATION DU SITE (Clause déplacement à vide)
+                   ↓
+                PAIEMENT
+                   ↓
+              CONFIRMATION
+                   ↓
+           RAPPELS & GESTION MÉTÉO
+```
 
-⸻
+---
 
-3. Accueil
+# 3. Accueil
 
-Proposition principale
+Titre
 
 Marquage et traçage de stationnements commerciaux
 
-Présenter brièvement Groupe Ferguson et ses services.
-
-Bouton principal
+Action principale
 
 Obtenir une soumission
 
-Option Auto-Quote
+Option secondaire
 
-Obtenir une quote instantanément
+Obtenir une Auto-Quote
 
-L’objectif est de présenter immédiatement les deux possibilités sans surcharger la page.
+Le site présente rapidement les services de Groupe Ferguson sans imposer la carte à tous les visiteurs.
 
-⸻
+---
 
-4. Étape 1 — Client
+# 4. Étape 1 — Client
 
-Le client indique s’il agit comme :
+Type de client
 
-○ Entreprise
-○ Particulier
+* Entreprise / Commercial
+* Gestionnaire / Copropriété
+* Particulier
 
 Informations
 
 * Nom
 * Nom de l’entreprise, si applicable
-* Téléphone
+* Téléphone (compatible SMS)
 * Courriel
 
-Ces informations constituent le dossier client.
+Ces informations constituent le dossier client. Dès cette étape, un dossier brouillon est sauvegardé pour permettre la relance en cas d'abandon.
 
-⸻
+---
 
-5. Étape 2 — Adresse du projet
+# 5. Étape 2 — Adresse du projet
 
 Question
 
 Quelle est l’adresse du stationnement à marquer?
 
-Le client entre l’adresse.
-
 Le système :
 
 * valide l’adresse;
-* la normalise;
+* normalise l’adresse;
 * récupère latitude et longitude;
 * crée le projet;
-* calcule la distance depuis Groupe Ferguson.
+* calcule automatiquement la distance depuis Groupe Ferguson.
 
-⸻
+---
 
-6. Calcul automatique de la distance
+# 6. Calcul automatique de la distance
 
 Le système calcule la distance entre :
 
@@ -126,11 +130,14 @@ et
 
 Adresse du projet
 
-Donnée enregistrée
+Lorsque cette distance sert à déterminer des frais de déplacement, utiliser de préférence la distance routière.
+
+Données conservées
 
 distance_km
-
-Lorsque le calcul sert à déterminer des frais de déplacement, utiliser de préférence la distance routière.
+source_du_calcul
+date_du_calcul
+zone_tarifaire
 
 Exemple
 
@@ -144,45 +151,37 @@ Zone tarifaire
        ↓
 Frais de déplacement éventuels
 
-Les règles de distance doivent être configurables dans l’administration.
+Les zones et tarifs doivent être configurables dans l’administration.
 
-Exemple de configuration
+---
 
-0–25 km       → Zone 1
-25–50 km      → Zone 2
-50–75 km      → Zone 3
-75 km +       → Sur demande
+# 7. Étape 3 — Nombre de places
 
-Les valeurs ci-dessus sont des exemples et ne constituent pas les tarifs définitifs.
-
-⸻
-
-7. Étape 3 — Nombre de places
-
-Après l’adresse :
+Question
 
 Combien de places de stationnement?
 
 [ __________ ]
 
-Le nombre de places est enregistré dans le projet et transmis automatiquement à la soumission ou à l’Auto-Quote.
+Cette information est conservée dans le projet et réutilisée automatiquement dans la soumission et l’Auto-Quote.
 
-⸻
+---
 
-8. Étape 4 — Symboles
+# 8. Étape 4 — Symboles
 
 Question
 
-Quels symboles devez-vous faire marquer?
+Quels symboles et travaux de préparation devez-vous faire exécuter?
 
-Le client sélectionne les types et quantités.
-
-Symbole	Quantité
+Symbole / Service	Quantité / Option
 PMR	[ ]
 Flèches	[ ]
 Réservé	[ ]
 Recharge électrique	[ ]
-Autre	[ ]
+Hachurage / Autre	[ ]
+Balayage / Nettoyage mécanique	○ Oui  ○ Non
+Lavage haute pression	○ Oui  ○ Non
+Effacement / Meulage d'anciennes lignes	○ Oui  ○ Non
 
 Bouton :
 
@@ -192,9 +191,9 @@ Option :
 
 Aucun symbole
 
-⸻
+---
 
-9. Étape 5 — Type de stationnement
+# 9. Étape 5 — Type de stationnement
 
 ○ Stationnement extérieur
 ○ Stationnement sous-terrain
@@ -202,32 +201,38 @@ Aucun symbole
 
 Si sous-terrain
 
-Afficher un champ supplémentaire :
+Afficher :
+
+Hauteur libre maximale [ ___ ] mètres
+
+Photos du stationnement (Optionnel) : [ Téléverser des photos ]
 
 Commentaires / particularités
 
-Permettre notamment d’indiquer :
+Exemples :
 
 * accès particulier;
 * hauteur limitée;
-* contraintes;
 * circulation;
-* heures d’accès;
-* autres informations pertinentes.
+* contraintes;
+* heures d’accès.
 
-Des photos peuvent être demandées lorsque nécessaire.
+Contraintes d'exécution (Horaires)
 
-⸻
+○ Heures régulières (De jour, Lundi au Vendredi)
+○ Hors-heures (De nuit ou Fin de semaine - Surcharge applicable)
 
-10. Étape 6 — Type de travaux
+---
+
+# 10. Étape 6 — Type de travaux
 
 ○ Nouveau marquage
 ○ Repeinture
 ○ Nouveau marquage + repeinture
 
-⸻
+---
 
-11. Choix du parcours
+# 11. Choix du parcours
 
 Une fois les informations de base recueillies, présenter deux options.
 
@@ -235,100 +240,84 @@ Option A — Soumission Groupe Ferguson
 
 Recevoir ma soumission
 
-Texte :
-
 Nous préparerons votre soumission et communiquerons avec vous dans les 24 heures.
 
 Le client n’a pas besoin d’utiliser la carte.
 
-Le dossier est transmis à Groupe Ferguson avec toutes les informations déjà recueillies.
-
-⸻
+Les informations sont transmises directement à Groupe Ferguson.
 
 Option B — Auto-Quote
 
 Obtenir mon Auto-Quote maintenant
 
-Texte :
-
 Dessinez votre zone de travaux sur la carte et obtenez votre quote instantanément.
 
-C’est uniquement à ce moment que le client accède à la carte satellite.
+La carte satellite apparaît uniquement si le client choisit cette option.
 
-⸻
+---
 
-12. Parcours Soumission 24 heures
+# 12. Parcours — Soumission 24 heures
 
-Si le client choisit Recevoir ma soumission :
-
-Informations client
-        ↓
+Client
+↓
 Adresse
-        ↓
+↓
 Places
-        ↓
-Symboles
-        ↓
-Stationnement
-        ↓
-Travaux
-        ↓
+↓
+Symboles & Préparation
+↓
+Type de stationnement & Horaires
+↓
+Type de travaux
+↓
 Distance
-        ↓
+↓
 Dossier Groupe Ferguson
-        ↓
+↓
 Préparation de la soumission
-        ↓
+↓
 Envoi au client
 
-Le client reçoit une notification confirmant que sa demande a été reçue.
-
-Message
+Confirmation
 
 Votre demande a été reçue. Groupe Ferguson préparera votre soumission et communiquera avec vous dans les 24 heures.
 
-Le délai de 24 heures doit être présenté conformément aux heures de service et aux conditions commerciales réelles de Groupe Ferguson.
+Le délai doit être appliqué conformément aux heures de service et aux conditions commerciales de Groupe Ferguson.
 
-⸻
+---
 
-13. Parcours Auto-Quote
+# 13. Parcours — Auto-Quote
 
-Si le client choisit Auto-Quote, afficher la carte satellite.
+Lorsque le client choisit Auto-Quote, afficher automatiquement la carte satellite centrée sur l’adresse fournie.
 
-L’adresse précédemment fournie est automatiquement utilisée.
+---
 
-Le client n’a pas besoin de rechercher à nouveau son stationnement.
-
-⸻
-
-14. Carte satellite
+# 14. Carte satellite
 
 Instruction
 
 Tracez approximativement la zone à travailler.
 
-Le client dessine le périmètre de la zone.
+Le client dessine le périmètre.
 
-Le système calcule :
+Le système calcule automatiquement :
 
 * superficie;
 * périmètre;
 * coordonnées;
 * zone de travaux.
 
-Principe UX
+Option d'assistance UX / Mobile :
 
-Le client n’a pas besoin de mesurer.
+Si la carte satellite est masquée (arbres, neige, mauvaise résolution) ou difficile à tracer sur mobile, un bouton permet de basculer vers le parcours Soumission 24 h sans perdre les données déjà saisies.
 
-La zone peut être approximative.
+Le client n’a pas besoin de mesurer lui-même la superficie.
 
-Le moteur de calcul doit tenir compte de cette incertitude.
+---
 
-⸻
+# 15. Moteur Auto-Quote
 
-15. Auto-Quote
-
-Le moteur utilise les informations recueillies avant la carte et les données géographiques.
+Le moteur combine toutes les données :
 
 Client
 +
@@ -338,9 +327,9 @@ Distance
 +
 Nombre de places
 +
-Symboles
+Symboles & Préparation
 +
-Type de stationnement
+Type de stationnement & Horaires
 +
 Type de travaux
 +
@@ -348,13 +337,13 @@ Zone dessinée
 +
 Superficie
 +
-Règles tarifaires
+Règles tarifaires (Prix minimum & Surcharges)
 =
 AUTO-QUOTE
 
-⸻
+---
 
-16. Moteur de prix
+# 16. Moteur de prix
 
 Les paramètres doivent être configurables par Groupe Ferguson.
 
@@ -363,44 +352,56 @@ Paramètres possibles
 * tarif au m²;
 * tarif par place;
 * prix par symbole;
+* prix préparation de surface (nettoyage, effacement);
 * type de travaux;
 * supplément sous-terrain;
+* supplément travaux hors-heures (nuit/fin de semaine);
 * frais de déplacement;
-* zone kilométrique;
-* prix minimum;
+* zones kilométriques;
+* prix minimum par déplacement (prix plancher, ex: 350 $);
 * frais supplémentaires;
 * taxes;
-* rabais.
+* rabais;
+* durée de validité (ex: 14 jours).
 
-Aucun tarif commercial ne doit être codé directement dans l’interface.
+Les tarifs commerciaux ne doivent pas être codés directement dans l’interface.
 
-⸻
+---
 
-17. Présentation du prix
-
-L’Auto-Quote doit clairement indiquer qu’il s’agit d’une quote générée automatiquement.
+# 17. Présentation de l’Auto-Quote
 
 Exemple :
 
-Auto-Quote
+Votre Auto-Quote
 
 3 850 $
 
-Calculée selon les informations et la zone sélectionnée.
+Validité : Cette estimation est garantie pendant 14 jours.
 
-Lorsque l’incertitude est trop importante, le système peut afficher une fourchette :
+Afficher le détail pertinent :
+
+* travaux;
+* nombre de places;
+* symboles et nettoyage;
+* superficie;
+* type de stationnement et horaire sélectionné;
+* distance;
+* frais et prix minimum appliqué si applicable;
+* taxes.
+
+Lorsque l’incertitude est importante, le système peut afficher une fourchette :
 
 3 600 $ – 4 100 $
 
 Avis
 
-Cette Auto-Quote est basée sur les informations fournies et la zone approximativement sélectionnée. Le prix peut être ajusté si les conditions réelles du projet diffèrent des informations fournies.
+Cette Auto-Quote est basée sur les informations fournies et la zone approximativement sélectionnée. Groupe Ferguson se réserve le droit d'ajuster le prix si les conditions réelles du projet diffèrent des informations fournies.
 
-⸻
+---
 
-18. Acceptation de l’Auto-Quote
+# 18. Acceptation
 
-Si le client accepte :
+Bouton :
 
 ACCEPTER L’AUTO-QUOTE
 
@@ -410,25 +411,26 @@ Le système enregistre :
 * version de la quote;
 * montant;
 * données utilisées;
+* date d'expiration;
 * date;
 * heure;
 * client.
 
-Le statut devient :
+Statut :
 
 Auto-Quote acceptée
 
-⸻
+---
 
-19. Réservation
+# 19. Réservation
 
-Après l’acceptation :
+Après acceptation :
 
 CHOISIR MON RENDEZ-VOUS
 
-Le calendrier affiche uniquement les disponibilités configurées par Groupe Ferguson.
+Le client voit les disponibilités configurées par Groupe Ferguson. Le créneau est verrouillé pendant 15 minutes durant la prise de rendez-vous.
 
-Le client sélectionne :
+Il sélectionne :
 
 * date;
 * plage horaire.
@@ -443,26 +445,27 @@ Quote
 +
 Rendez-vous
 
-Le système doit empêcher les doubles réservations.
+Les doubles réservations doivent être bloquées.
 
-⸻
+---
 
-20. Préparation du site
+# 20. Préparation du site
 
-Avant la confirmation du rendez-vous, afficher clairement :
+Avant la confirmation et le paiement :
 
 Veuillez vous assurer qu’aucun véhicule ne se trouve dans la zone des travaux au moment de notre arrivée.
 
 Confirmation obligatoire
 
-☐ Aucun véhicule sera présent dans la zone de travaux.
+☐ Aucun véhicule ne sera présent dans la zone de travaux.
 ☐ La zone sera libre d'obstacles.
 ☐ L'accès au stationnement sera disponible.
 ☐ Les restrictions particulières ont été communiquées.
+☐ J'accepte qu'un frais de déplacement à vide (250 $) s'applique si les travaux ne peuvent être exécutés à notre arrivée en raison d'un site non libéré.
 
-⸻
+---
 
-21. Paiement
+# 21. Paiement
 
 Après l’acceptation et la réservation :
 
@@ -470,49 +473,48 @@ Option 1 — Dépôt
 
 5 % de rabais
 
-Le client paie le dépôt applicable.
+Le client paie le dépôt applicable (ex: 30% ou 50%). La carte est conservée de manière sécurisée pour le solde.
 
 Option 2 — Paiement complet
 
 10 % de rabais
 
-Le client règle la totalité du montant.
+Le client paie la totalité du projet.
 
-Important
+Les rabais ne sont pas cumulables.
 
-Les deux rabais ne sont pas cumulables.
-
-Le système doit afficher avant le paiement :
+Le système affiche avant le paiement :
 
 Prix original
 Rabais
 Montant à payer
 Solde éventuel
 
-⸻
+---
 
-22. Paiement Stripe
+# 22. Stripe
 
-Stripe traite le paiement.
+Stripe est utilisé pour traiter les paiements.
 
 Le système conserve :
 
 * identifiant de transaction;
+* identifiant client Stripe (`setup_future_usage` pour prélever le solde);
 * projet;
+* type de paiement;
 * montant;
 * rabais;
 * statut;
 * date;
-* montant payé;
 * solde.
 
-La confirmation du paiement doit être effectuée côté serveur.
+La confirmation du paiement et le calcul du montant doivent être effectués et validés obligatoirement côté serveur.
 
-Les données sensibles de carte ne doivent pas être stockées directement dans la base de données Groupe Ferguson.
+Les données sensibles de carte ne doivent pas être stockées directement par Groupe Ferguson.
 
-⸻
+---
 
-23. Confirmation
+# 23. Confirmation finale
 
 Après paiement :
 
@@ -532,21 +534,19 @@ Afficher :
 * montant payé;
 * solde éventuel.
 
-Une confirmation est envoyée au client.
+Une confirmation est envoyée au client (Courriel + SMS).
 
-⸻
+---
 
-24. Rappels automatiques
+# 24. Rappels & Gestion Météo
 
-Prévoir :
+Confirmation
 
-Confirmation immédiate
+Immédiatement après la réservation.
 
-Après réservation.
+Rappel avant les travaux
 
-Rappel avant travaux
-
-Inclure :
+Rappeler (J-2 et J-1) :
 
 * aucun véhicule dans la zone;
 * zone dégagée;
@@ -554,9 +554,16 @@ Inclure :
 * obstacles retirés;
 * restrictions communiquées.
 
-⸻
+Gestion des intempéries (Météo)
 
-25. Administration Groupe Ferguson
+En cas de pluie ou températures non conformes :
+
+* l'administration passe la journée en « Annulée - Météo »;
+* le client reçoit automatiquement un SMS/Courriel avec un lien prioritaire pour rechoisir une date dans le calendrier.
+
+---
+
+# 25. Administration Groupe Ferguson
 
 Tableau de bord
 
@@ -569,13 +576,14 @@ Soumissions acceptées
 Rendez-vous
 Paiements
 Projets à venir
+Projets reportés (Météo)
 Projets terminés
 
-⸻
+---
 
-26. Fiche projet
+# 26. Fiche projet
 
-Une seule fiche regroupe toutes les informations.
+Toutes les données doivent être regroupées dans une seule fiche.
 
 PROJET #GF-XXXXX
 CLIENT
@@ -588,20 +596,21 @@ PROJET
 - Adresse
 - Latitude
 - Longitude
-- Distance en km
-- Type de stationnement
+- Distance
+- Type de stationnement (Hauteur sous-terrain)
+- Contrainte horaire (Jour / Nuit / Fin de semaine)
 - Type de travaux
 - Nombre de places
 TRAVAUX
-- Symboles
-- Quantités
+- Symboles & Quantités
+- Préparation de surface (Balayage, Meulage)
 - Zone
 - Superficie
 - Commentaires
-- Photos
+- Photos téléversées
 VENTE
 - Estimation
-- Auto-Quote
+- Auto-Quote (Version, Date expiration, Prix min. appliqué)
 - Soumission
 - Acceptation
 PLANIFICATION
@@ -612,14 +621,16 @@ PAIEMENT
 - Rabais
 - Montant payé
 - Solde
-HISTORIQUE
+HISTORIQUE / LOGS
 - Actions
 - Dates
 - Versions
 
-⸻
+---
 
-27. Statuts du projet
+# 27. Statuts
+
+Soumission classique
 
 NOUVELLE DEMANDE
         ↓
@@ -635,13 +646,13 @@ RENDEZ-VOUS RÉSERVÉ
         ↓
 DÉPÔT / PAYÉ
         ↓
-PLANIFIÉ
+PLANIFIÉ (ou REPORTÉ MÉTÉO / SITE NON DÉGAGÉ)
         ↓
 TRAVAUX
         ↓
 TERMINÉ
 
-Pour l’Auto-Quote :
+Auto-Quote
 
 AUTO-QUOTE
     ↓
@@ -650,25 +661,32 @@ ACCEPTÉE
 RENDEZ-VOUS
     ↓
 PAIEMENT
+    ↓
+PLANIFIÉ (ou REPORTÉ MÉTÉO / SITE NON DÉGAGÉ)
+    ↓
+TRAVAUX
+    ↓
+TERMINÉ
 
-⸻
+---
 
-28. Gestion du calendrier
+# 28. Calendrier
 
-L’administration permet de définir :
+L’administration doit permettre de configurer :
 
-* jours ouvrables;
+* jours disponibles;
 * heures disponibles;
-* durée estimée des travaux;
+* durée des travaux;
 * temps tampon;
 * journées bloquées;
+* annulations météo en masse;
 * vacances;
-* capacité quotidienne;
+* capacité quotidienne (m² maximums par jour);
 * disponibilités exceptionnelles.
 
-⸻
+---
 
-29. Notifications
+# 29. Notifications
 
 Client
 
@@ -677,26 +695,26 @@ Client
 * Auto-Quote générée;
 * Auto-Quote acceptée;
 * rendez-vous confirmé;
-* rappel;
+* rappel pré-travaux;
+* alerte remise à plus tard pour météo (avec lien de re-planification);
 * paiement confirmé;
 * projet confirmé.
 
 Groupe Ferguson
 
 * nouvelle demande;
-* nouvelle demande à traiter;
+* demande à traiter;
 * Auto-Quote acceptée;
 * soumission acceptée;
 * nouveau rendez-vous;
 * paiement;
+* problème d'accès terrain (site non libéré);
 * annulation;
 * modification.
 
-⸻
+---
 
-30. Calcul de distance
-
-Le système doit conserver le calcul utilisé pour chaque projet.
+# 30. Calcul de distance
 
 Point Groupe Ferguson
         ↓
@@ -708,11 +726,11 @@ Distance routière
         ↓
 Distance en km
         ↓
-Règle tarifaire
+Zone tarifaire
         ↓
-Frais de déplacement éventuels
+Frais éventuels
 
-Données à conserver :
+Données conservées :
 
 distance_km
 source_du_calcul
@@ -720,11 +738,11 @@ date_du_calcul
 zone_tarifaire
 frais_appliqués
 
-Cela permet de reproduire le calcul associé à une quote ou une soumission.
+Le calcul associé à une Auto-Quote ou à une soumission doit être conservé afin de pouvoir reproduire le prix.
 
-⸻
+---
 
-31. Données principales
+# 31. Base de données
 
 Client
 
@@ -733,7 +751,8 @@ type_client
 nom
 entreprise
 courriel
-téléphone
+telephone
+date_creation
 
 Projet
 
@@ -745,9 +764,19 @@ longitude
 distance_km
 zone_tarifaire
 type_stationnement
+hauteur_sous_terrain
+contrainte_horaires
 type_travaux
 nombre_places
 commentaires
+statut
+
+Projet_Photos
+
+id
+project_id
+url_photo
+date_upload
 
 Zone
 
@@ -770,10 +799,13 @@ prix_base
 prix_zone
 prix_places
 prix_symboles
+prix_preparation
+surcharge_horaire
 frais_distance
-frais_options
+frais_minimum_applique
 total
 version
+date_expiration
 date
 
 Soumission
@@ -798,6 +830,7 @@ Paiement
 
 project_id
 stripe_payment_id
+stripe_customer_id
 type_paiement
 montant_original
 rabais
@@ -806,9 +839,17 @@ solde
 statut
 date
 
-⸻
+Projet_Logs
 
-32. Sécurité
+id
+project_id
+action
+auteur
+date
+
+---
+
+# 32. Sécurité
 
 Prévoir :
 
@@ -816,36 +857,36 @@ Prévoir :
 * authentification sécurisée;
 * contrôle des accès;
 * protection anti-spam;
-* validation serveur;
-* validation des fichiers;
+* validation serveur (calcul des prix et paiements côté serveur uniquement);
+* validation des fichiers / photos téléversés;
 * sauvegardes;
 * journalisation;
 * protection des renseignements personnels;
 * validation serveur des paiements Stripe.
 
-⸻
+---
 
-33. Expérience mobile
+# 33. Expérience mobile
 
 Le système doit être mobile-first.
 
-Priorités :
+Priorités
 
-1. peu de champs;
-2. grandes zones tactiles;
-3. progression claire;
-4. aucune répétition;
-5. carte simple;
-6. chargement rapide;
-7. une action principale par écran.
+1. Peu de champs.
+2. Grandes zones tactiles.
+3. Progression claire.
+4. Aucune répétition.
+5. Carte simple avec bouton de secours si dessin difficile.
+6. Chargement rapide.
+7. Une action principale par écran.
 
-⸻
+---
 
-34. Principe de réduction de friction
+# 34. Principe de réduction de friction
 
-Le client ne doit jamais :
+Le client ne doit jamais avoir à :
 
-* mesurer lui-même son stationnement;
+* mesurer son stationnement;
 * calculer les kilomètres;
 * rechercher deux fois son adresse;
 * ressaisir le nombre de places;
@@ -856,17 +897,17 @@ Principe
 
 Une information saisie une fois est réutilisée partout.
 
-⸻
+---
 
-35. Architecture fonctionnelle
+# 35. Architecture fonctionnelle
 
-                     GROUPEFERGUSON.CA
+                    GROUPEFERGUSON.CA
                              │
                              ▼
-                          CLIENT
+                          CLIENT (Sauvegarde brouillon)
                              │
                              ▼
-                    INFORMATIONS DE BASE
+                    INFORMATIONS CLIENT
                              │
                              ▼
                          ADRESSE
@@ -875,10 +916,16 @@ Une information saisie une fois est réutilisée partout.
                     CALCUL DE DISTANCE
                              │
                              ▼
-                    PLACES + SYMBOLES
+                    NOMBRE DE PLACES
                              │
                              ▼
-                  TYPE + TRAVAUX
+               SYMBOLES & PRÉPARATION SURFACE
+                             │
+                             ▼
+             TYPE STATIONNEMENT & HORAIRES
+                             │
+                             ▼
+                     TYPE DE TRAVAUX
                              │
                              ▼
                   ┌──────────┴──────────┐
@@ -887,19 +934,19 @@ Une information saisie une fois est réutilisée partout.
              SOUMISSION             AUTO-QUOTE
                 24 H                    │
                   │                     ▼
-                  │                SATELLITE
+                  │                SATELLITE (Option secours mobile)
                   │                     │
                   │                     ▼
-                  │                  ZONE
+                  │                    ZONE
                   │                     │
                   │                     ▼
                   │                SUPERFICIE
                   │                     │
                   │                     ▼
-                  │                CALCUL PRIX
+                  │           CALCUL PRIX (Prix min/Surcharges)
                   │                     │
                   │                     ▼
-                  │                   QUOTE
+                  │            QUOTE (Valide 14j)
                   │                     │
                   └──────────┬──────────┘
                              ▼
@@ -909,53 +956,75 @@ Une information saisie une fois est réutilisée partout.
                          CALENDRIER
                              │
                              ▼
-                           STRIPE
+              PRÉPARATION SITE (Dry-run fee)
+                             │
+                             ▼
+                      STRIPE (Paiement/Dépôt)
                              │
                              ▼
                         CONFIRMATION
+                             │
+                             ▼
+                  RAPPELS & GESTION MÉTÉO
 
-⸻
+---
 
-36. Différenciation commerciale
+# 36. Positionnement
 
-Le système repose sur deux propositions simples.
+Le système devient un outil de vente et de gestion complet :
 
-Pour le client qui veut un accompagnement
-
-Envoyez-nous vos informations. Nous préparons votre soumission dans les 24 heures.
-
-Pour le client qui veut aller rapidement
-
-Dessinez votre stationnement et obtenez votre Auto-Quote instantanément.
-
-Cela permet à Groupe Ferguson de servir à la fois les clients qui veulent une interaction humaine et ceux qui privilégient l’immédiateté.
-
-⸻
-
-37. Positionnement final
-
-Le site devient plus qu’un site vitrine.
-
-Il constitue un :
-
-Système automatisé d’acquisition, de qualification, d’estimation, de soumission, de réservation et de paiement pour les projets de marquage de stationnements commerciaux.
+Système automatisé d’acquisition, de qualification, d’estimation, de soumission, de réservation, de gestion météo et de paiement pour les projets de marquage de stationnements commerciaux.
 
 Parcours classique
 
-Client → Adresse → Informations → Groupe Ferguson → Soumission ≤ 24 h → Acceptation → Rendez-vous → Paiement
+Client
+→ Adresse
+→ Places
+→ Symboles & Préparation
+→ Type de stationnement & Horaires
+→ Travaux
+→ Groupe Ferguson
+→ Soumission ≤ 24 h
+→ Acceptation
+→ Rendez-vous
+→ Engagements site
+→ Paiement
 
 Parcours Auto-Quote
 
-Client → Adresse → Informations → Satellite → Zone → Auto-Quote → Acceptation → Rendez-vous → Paiement
+Client
+→ Adresse
+→ Places
+→ Symboles & Préparation
+→ Type de stationnement & Horaires
+→ Travaux
+→ Satellite
+→ Zone
+→ Superficie
+→ Auto-Quote
+→ Acceptation
+→ Rendez-vous
+→ Engagements site
+→ Paiement
 
-⸻
+---
 
-38. Principe directeur
+# 37. Principe directeur final
 
-Le client donne les informations essentielles.
+Le client fournit les informations essentielles.
 
-Groupe Ferguson peut préparer la soumission.
+Groupe Ferguson peut préparer la soumission dans les 24 heures.
 
-Ou le client peut utiliser l’Auto-Quote et continuer immédiatement.
+Ou le client peut utiliser l’Auto-Quote pour obtenir immédiatement son prix garanti.
 
-L’objectif final est de permettre au client de passer de « Je veux faire marquer mon stationnement » à « Mon projet est réservé » avec le moins d’étapes et de friction possible.
+Une fois accepté, le client s'engage sur la préparation du site, réserve sa date et effectue son paiement en ligne.
+
+En cas de mauvaise météo, le système gère automatiquement le report du rendez-vous.
+
+L’objectif est de transformer le plus simplement possible :
+
+« Je veux faire marquer mon stationnement »
+
+en
+
+« Mon projet est réservé, planifié et confirmé. »
